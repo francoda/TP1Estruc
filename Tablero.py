@@ -1,9 +1,10 @@
 import random
+import enum
 
 class Tablero():
 
     def __init__(self, filas, columnas):
-        self.tablero = [["-"] * columnas for _ in range(filas)]
+        self.tablero = [[Celular.MUERTA] * columnas for _ in range(filas)]
 
     def random(self, celulas_vivas):
         if(celulas_vivas > 0 and celulas_vivas < len(self.tablero)*len(self.tablero)):
@@ -14,7 +15,7 @@ class Tablero():
             random.shuffle(combinaciones)
             while celulas_vivas > 0:
                 combinacion_random = combinaciones.pop()
-                self.tablero[combinacion_random[0]][combinacion_random[1]] = '*'
+                self.tablero[combinacion_random[0]][combinacion_random[1]] = Celular.VIVA
                 celulas_vivas -= 1
         else:
             raise IndexError
@@ -22,7 +23,7 @@ class Tablero():
     def set_value(self, fila, columna, valor):
         if fila > 0 and columna > 0 and fila < len(self.tablero[0]) and fila < len(self.tablero):
             raise IndexError
-        elif valor != "-" or valor != "*":
+        elif valor != Celular.MUERTA or valor != Celular.VIVA:
             raise Exception("Valor incorrecto(Valores posibles:[-,*])")
         else:
             self.tablero[columna][fila] = valor
@@ -30,3 +31,7 @@ class Tablero():
     def imprimir_tablero(self):
         for t in self.tablero:
             print(str(t))
+
+class Celular(enum):
+    MUERTA = '-'
+    VIVA = '*'
