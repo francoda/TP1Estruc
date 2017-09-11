@@ -1,10 +1,12 @@
 import random
-import enum
+from enum import Enum, IntEnum
 
 class Tablero():
 
     def __init__(self, filas, columnas):
-        self.tablero = [[Celular.MUERTA] * columnas for _ in range(filas)]
+        self.tablero = [[Celula.MUERTA] * columnas for _ in range(filas)]
+        self.modo_de_juego = Modo_De_Juego.NOTSET
+        self.modo_de_generacion = Modo_De_Generacion.NOTSET
 
     def random(self, celulas_vivas):
         if(celulas_vivas > 0 and celulas_vivas < len(self.tablero)*len(self.tablero)):
@@ -15,23 +17,47 @@ class Tablero():
             random.shuffle(combinaciones)
             while celulas_vivas > 0:
                 combinacion_random = combinaciones.pop()
-                self.tablero[combinacion_random[0]][combinacion_random[1]] = Celular.VIVA
+                self.tablero[combinacion_random[0]][combinacion_random[1]] = Celula.VIVA
                 celulas_vivas -= 1
         else:
             raise IndexError
 
-    def set_value(self, fila, columna, valor):
+    def set_value(self, fila, columna, valor=''):
         if fila > 0 and columna > 0 and fila < len(self.tablero[0]) and fila < len(self.tablero):
             raise IndexError
-        elif valor != Celular.MUERTA or valor != Celular.VIVA:
-            raise Exception("Valor incorrecto(Valores posibles:[-,*])")
+        elif valor != '' or valor != Celula.MUERTA or valor != Celula.VIVA:
+            raise Exception('Valor incorrecto(Valores posibles:[-,*])')
+        elif valor == '':
+            self.tablero[columna][fila] = Celula.VIDA if self.tablero[columna][fila] == Celula.MUERTA else Celula.VIDA
         else:
             self.tablero[columna][fila] = valor
+
+    def get_modo_de_juego(self):
+        return self.modo_de_juego
+
+    def set_modo_de_juego(self, modo_de_juego):
+        self.modo_de_juego == modo_de_juego
+
+    def get_modo_de_generacion(self):
+        return self.modo_de_generacion
+
+    def set_modo_de_generacion(self, modo_de_generacion):
+        self.modo_de_generacion == modo_de_generacion
 
     def imprimir_tablero(self):
         for t in self.tablero:
             print(str(t))
 
-class Celular(enum):
+class Celula(Enum):
     MUERTA = '-'
     VIVA = '*'
+
+class Modo_De_Juego(IntEnum):
+    NOTSET = 0
+    NORMAL = 1
+    VIDA_ESTATICA = 2
+
+class Modo_De_Generacion(IntEnum):
+    NOTSET = 0
+    RANDOM = 1
+    MANUAL = 2
