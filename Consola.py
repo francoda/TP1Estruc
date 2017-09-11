@@ -1,5 +1,5 @@
-from enum import IntEnum
 from Tablero import *
+from Persistencia import *
 import os
 
 class Menu():
@@ -14,43 +14,47 @@ class Menu():
                 # Cargo Tablero y configuracion
                 if self.menu_principal == Menu_Principal.NUEVO_JUEGO:
                     while True:
-                        #try:
+                        try:
                             fila, columna = [int(x) for x in self.leer_string(
                                 'Ingresar tamaño:[{filas}x{columnas}]').split('x')]
+                            if fila > 30 or columna > 60 or fila < 5 or columna < 5:
+                                raise Exception('Te fuiste al carajo')
                             self.tablero = Tablero(fila, columna)
                             break
-                        #except:
-                        #   pass
+                        except Exception as e:
+                            self.leer_string(str(e) + ' \n Presione cualquier tecla para continuar')
                 elif self.menu_principal == Menu_Principal.CARGAR_PARTIDA:
-                    # TODO: Recuperar tablero
-                    self.tablero #=
+                    self.tablero = persistencia.cargar('', 'Default')
                 elif self.menu_principal == Menu_Principal.SALIR:
                     break #Cierro el programa
                 # Cargo Configuraciones si no estan seteadas
-                if self.tablero.get_modo_de_juego == Modo_De_Juego.NOTSET:
-                    self.tablero.set_modo_de_juego(self.leer_entero('Seleccione modo de juego: \n'
-                                                             '1 - Normal \n'
-                                                             '2 - Vida Estática \n' 
-                                                             '0 - Salir \n', True))
-                if self.tablero.get_modo_de_juego != Modo_De_Juego.NOTSET and self.tablero.get_modo_de_generacion == Modo_De_Generacion.NOTSET:
-                    self.tablero.set_modo_de_generacion(self.leer_entero('Seleccione metodo de generación: \n'
-                                                                 '1 - Aleatorio \n'
-                                                                 '2 - Manual \n' 
-                                                                 '0 - Salir \n', True))
-                    if self.tablero.get_modo_de_generacion == Modo_De_Generacion.RANDOM:
+                if self.tablero.modo_de_juego == Modo_De_Juego.NOTSET:
+                    self.tablero.modo_de_juego = (self.leer_entero('Seleccione modo de juego: \n'
+                                                                     '1 - Normal \n'
+                                                                     '2 - Vida Estática \n' 
+                                                                     '0 - Salir \n', True))
+                if self.tablero.modo_de_juego != Modo_De_Juego.NOTSET and self.tablero.modo_de_generacion == Modo_De_Generacion.NOTSET:
+                    self.tablero.modo_de_generacion = self.leer_entero('Seleccione metodo de generación: \n'
+                                                                         '1 - Aleatorio \n'
+                                                                         '2 - Manual \n' 
+                                                                         '0 - Salir \n', True)
+                    if self.tablero.modo_de_generacion == Modo_De_Generacion.RANDOM:
                         self.tablero.random(self.leer_entero('Ingresar número de celulas vivas:'))
-                    elif self.tablero.get_modo_de_generacion == Modo_De_Generacion.MANUAL:
+                    elif self.tablero.modo_de_generacion == Modo_De_Generacion.MANUAL:
                         while True:
                             try:
                                 fila, columna = [int(x) for x in self.leer_string(
                                     'Ingresar coordenadas de la célula que desea modificar:[{fila}x{columna}]').split('x')]
                                 self.tablero.set_value(fila, columna)
                                 self.tablero.imprimir_tablero()
+                                self.leer_string('Presione cualquier tecla para continuar')
                                 break
-                            except:
-                                pass
+                            except Exception as e:
+                                self.leer_string(str(e) + ' \n Presione cualquier tecla para continuar')
+            except KeyboardInterrupt:
+                persistencia.guardar('', self.tablero, 'Default')
             except Exception as e:
-                input(str(e))
+                self.leer_string(str(e) + ' \n Presione cualquier tecla para continuar')
 
 
     def leer_entero(self, texto, tomar_valores=False):

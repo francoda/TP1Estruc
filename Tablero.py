@@ -23,10 +23,10 @@ class Tablero():
             raise IndexError
 
     def set_value(self, fila, columna, valor=''):
-        if fila > 0 and columna > 0 and fila < len(self.tablero[0]) and fila < len(self.tablero):
+        if fila < 0 and columna < 0 and fila > len(self.tablero[0]) and fila > len(self.tablero):
             raise IndexError
         elif valor != '' or valor != Celula.MUERTA or valor != Celula.VIVA:
-            raise Exception('Valor incorrecto(Valores posibles:[-,*])')
+            raise Exception('Valor incorrecto(Valores posibles:[ ' + str(Celula.MUERTA) + ' , ' + str(Celula.VIVA) + '])')
         elif valor == '':
             self.tablero[columna][fila] = Celula.VIDA if self.tablero[columna][fila] == Celula.MUERTA else Celula.VIDA
         else:
@@ -54,18 +54,6 @@ class Tablero():
                     if adjacentes == 2 or adjacentes == 3:
                         matriz_actualizada[x][y] = '*'
         self.matriz = matriz_actualizada
-
-    def get_modo_de_juego(self):
-        return self.modo_de_juego
-
-    def set_modo_de_juego(self, modo_de_juego):
-        self.modo_de_juego == modo_de_juego
-
-    def get_modo_de_generacion(self):
-        return self.modo_de_generacion
-
-    def set_modo_de_generacion(self, modo_de_generacion):
-        self.modo_de_generacion == modo_de_generacion
 
     def imprimir_tablero(self):
         for t in self.tablero:
