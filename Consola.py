@@ -16,9 +16,11 @@ class Menu():
                     while True:
                         try:
                             fila, columna = [int(x) for x in self.leer_string(
-                                'Ingresar tamaño:[{filas}x{columnas}]').split('x')]
-                            if fila > 30 or columna > 60 or fila < 5 or columna < 5:
-                                raise Exception('Te fuiste al carajo')
+                                'Ingresar tamaño en formato "fila x columna":').split('x')]
+                            if fila > 30 or columna > 60:
+                                raise Exception('Las dimeciones del tablero no deben superar a 30x60')
+                            if fila < 5 or columna < 5:
+                                raise Exception('Las dimeciones del tablero deben superar a 5x5')
                             self.tablero = Tablero(fila, columna)
                             break
                         except Exception as e:
@@ -40,22 +42,31 @@ class Menu():
                                                                          '0 - Salir \n', True)
                     if self.tablero.modo_de_generacion == Modo_De_Generacion.RANDOM:
                         self.tablero.random(self.leer_entero('Ingresar número de celulas vivas:'))
+                        self.tablero.imprimir_tablero()
                     elif self.tablero.modo_de_generacion == Modo_De_Generacion.MANUAL:
                         while True:
                             try:
                                 fila, columna = [int(x) for x in self.leer_string(
-                                    'Ingresar coordenadas de la célula que desea modificar:[{fila}x{columna}]').split('x')]
+                                    'Ingresar coordenadas de la célula que desea modificar en formato "fila x columna":').split('x')]
                                 self.tablero.set_value(fila, columna)
                                 self.tablero.imprimir_tablero()
-                                self.leer_string('Presione cualquier tecla para continuar')
-                                break
+                                if self.leer_entero('1 - Modificar otra célula \n'
+                                                    '0 - Iniciar Juego') == 0:
+                                    break
                             except Exception as e:
                                 self.leer_string(str(e) + ' \n Presione cualquier tecla para continuar')
+                # Inicia el juego
+                while True:
+                    self.leer_entero('1 - Siguiente Generacion \n'
+                                     '2 - Editar \n'
+                                     '3 - Guardar \n'
+                                     '0 - Salir \n', True)
+                    self.tablero.actualizar_celulas()
+                    self.tablero.imprimir_tablero()
             except KeyboardInterrupt:
                 persistencia.guardar('', self.tablero, 'Default')
             except Exception as e:
                 self.leer_string(str(e) + ' \n Presione cualquier tecla para continuar')
-
 
     def leer_entero(self, texto, tomar_valores=False):
         valor = ''
@@ -92,7 +103,7 @@ class Menu_Principal(IntEnum):
 class Accion(IntEnum):
     SALIR = 0
     SIGUENTE = 1
-    MODIFICAR = 2
+    EDITAR = 2
 
 if __name__ == '__main__':
     Menu()

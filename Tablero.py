@@ -23,12 +23,14 @@ class Tablero():
             raise IndexError
 
     def set_value(self, fila, columna, valor=''):
+        fila -= 1
+        columna -= 1
         if fila < 0 and columna < 0 and fila > len(self.tablero[0]) and fila > len(self.tablero):
             raise IndexError
-        elif valor != '' or valor != Celula.MUERTA or valor != Celula.VIVA:
+        elif valor != '' and valor != Celula.MUERTA and valor != Celula.VIVA:
             raise Exception('Valor incorrecto(Valores posibles:[ ' + str(Celula.MUERTA) + ' , ' + str(Celula.VIVA) + '])')
         elif valor == '':
-            self.tablero[columna][fila] = Celula.VIDA if self.tablero[columna][fila] == Celula.MUERTA else Celula.VIDA
+            self.tablero[columna][fila] = Celula.VIVA if self.tablero[columna][fila] == Celula.MUERTA else Celula.MUERTA
         else:
             self.tablero[columna][fila] = valor
 
@@ -36,28 +38,27 @@ class Tablero():
         distancia_de_celdas = [(-1, -1), (-1, 0), (-1, 1), (0, -1), (0, 1), (1, -1), (1, 0), (1, 1)]
         celdas_vivas_alrededor = 0
         for x, y in distancia_de_celdas:
-            if (fila + x >= 0 and fila + x < len(self.matriz) and (columna + y >= 0 and columna + y < len(
-                    self.matriz[0]))):  # Verifica que este dentro del tablero
-                if (self.matriz[fila + x][columna + y] == '*'):
+            if (fila + x >= 0 and fila + x < len(self.tablero) and (columna + y >= 0 and columna + y < len(
+                    self.tablero[0]))):  # Verifica que este dentro del tablero
+                if (self.tablero[fila + x][columna + y] == Celula.VIVA):
                     celdas_vivas_alrededor += 1
             return celdas_vivas_alrededor
 
     def actualizar_celulas(self):
-        matriz_actualizada = self.matriz_nueva(len(self.matriz), len(self.matriz[0]))
-        for x in range(len(self.matriz)):
-            for y in range(len(self.matriz[x])):
+        matriz_actualizada = Tablero(len(self.tablero), len(self.tablero[0]))
+        for x in range(len(self.tablero)):
+            for y in range(len(self.tablero[x])):
                 adjacentes = self.calcular_adjacentes_vivos(x, y)
-                if (self.matriz[x][y] == '-'):
+                if (self.tablero[x][y] == Celula.MUERTA):
                     if (adjacentes >= 3):
-                        matriz_actualizada[x][y] = '*'
+                        matriz_actualizada[x][y] = Celula.VIVA
                 else:
                     if adjacentes == 2 or adjacentes == 3:
-                        matriz_actualizada[x][y] = '*'
-        self.matriz = matriz_actualizada
+                        matriz_actualizada[x][y] = Celula.VIVA
+        self.tablero = matriz_actualizada
 
     def imprimir_tablero(self):
-        for t in self.tablero:
-            print(str(t))
+        print('\n'.join([''.join(['{:4}'.format(Celula.value) for Celula in row]) for row in self.tablero]))
 
 class Celula(Enum):
     MUERTA = '-'
