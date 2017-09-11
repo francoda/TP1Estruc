@@ -10,7 +10,7 @@ class Juego_de_la_Vida(Tk):
 class SimpleTable(Frame):
     def __init__(self, parent, rows=10, columns=10):
         # Fondo negro
-        Frame.__init__(self, parent, background="black")
+        Frame.__init__(self, parent, background="Black")
         self._widgets = []
         for row in range(rows):
             current_row = []
@@ -28,10 +28,10 @@ class SimpleTable(Frame):
         widget = self._widgets[row][column]
         if value != "": # Si recibo color, lo ingreso
             widget.configure(bg=value)
-        elif widget.cget("bg") == 'White':
-            widget.configure(bg="Red")
-        else: # En caso de no recibir color, toggle entre Blanco y Rojo
+        elif widget.cget("bg") == 'Black':
             widget.configure(bg="White")
+        else: # En caso de no recibir color, toggle entre Blanco y Rojo
+            widget.configure(bg="Black")
 
 if __name__ == "__main__":
     app = Juego_de_la_Vida()
