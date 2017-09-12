@@ -67,6 +67,7 @@ class Menu():
                         persistencia.guardar('', self.tablero, 'Default')
                     elif self.accion == Accion.SALIR:
                         break
+
             except KeyboardInterrupt:
                 persistencia.guardar('', self.tablero, 'Default')
             except Exception as e:

@@ -55,7 +55,7 @@ class Tablero():
                 else:
                     if adjacentes == 2 or adjacentes == 3:
                         new_gen[x][y] = Celula.VIVA
-        self.matriz = new_gen.tablero
+        self.tablero = new_gen.tablero
 
     def imprimir_tablero(self):
         print('\n'.join([''.join(['{:4}'.format(Celula.value) for Celula in row]) for row in self.tablero]))
