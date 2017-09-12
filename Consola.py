@@ -46,33 +46,46 @@ class Menu():
                         self.tablero.random(self.leer_entero('Ingresar número de celulas vivas:'))
                         self.tablero.imprimir_tablero()
                     elif self.tablero.modo_de_generacion == Modo_De_Generacion.MANUAL:
-                        while True:
-                            try:
-                                fila, columna = [int(x) for x in self.leer_string(
-                                    'Ingrese las coordenadas de la célula que desea modificar en formato "fila x columna":').split('x')]
-                                self.limpiar()
-                                self.tablero.set_value(fila, columna)
-                                self.tablero.imprimir_tablero()
-                                if self.leer_entero('1 - Modificar otra célula \n'
-                                                    '0 - Iniciar Juego \n') == 0:
-                                    break
-                            except Exception as e:
-                                self.leer_string(str(e) + ' \n Presione Enter para continuar...')
+                        self.editar_tablero()
+                    elif self.tablero.modo_de_generacion == Modo_De_Generacion.NOTSET:
+                        break
                 # Inicia el juego
                 self.limpiar()
                 self.tablero.imprimir_tablero()
                 while True:
-                    self.leer_entero('1 - Siguiente Generación \n'
-                                     '2 - Editar \n'
-                                     '3 - Guardar \n'
-                                     '0 - Salir \n', True)
-                    self.limpiar()
-                    self.tablero.actualizar_celulas()
-                    self.tablero.imprimir_tablero()
+                    self.accion = self.leer_entero('1 - Siguiente Generación \n'
+                                                   '2 - Editar \n'
+                                                   '3 - Guardar \n'
+                                                   '0 - Salir \n', True)
+                    if self.accion == Accion.SIGUENTE:
+                        self.limpiar()
+                        self.tablero.actualizar_celulas()
+                        self.tablero.imprimir_tablero()
+                    elif self.accion == Accion.EDITAR:
+                        self.editar_tablero()
+                    elif self.accion == Accion.GUARDAR:
+                        persistencia.guardar('', self.tablero, 'Default')
+                    elif self.accion == Accion.SALIR:
+                        break
+
             except KeyboardInterrupt:
                 persistencia.guardar('', self.tablero, 'Default')
             except Exception as e:
                 self.leer_string(str(e) + ' \n Presione Enter para continuar...')
+
+    def editar_tablero(self):
+        while True:
+            try:
+                fila, columna = [int(x) for x in self.leer_string(
+                    'Ingresar coordenadas de la célula que desea modificar en formato "fila x columna":').split('x')]
+                self.limpiar()
+                self.tablero.set_value(fila, columna)
+                self.tablero.imprimir_tablero()
+                if self.leer_entero('1 - Modificar otra célula \n'
+                                    '0 - Iniciar Juego \n') == 0:
+                    break
+            except Exception as e:
+                self.leer_string(str(e) + ' \n Presione enter para continuar')
 
     def leer_entero(self, texto, tomar_valores=False):
         valor = ''
