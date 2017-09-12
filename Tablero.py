@@ -1,5 +1,7 @@
 import random
+import os
 from enum import Enum, IntEnum
+from Material.combination import combinations
 
 class Tablero():
 
@@ -9,9 +11,12 @@ class Tablero():
         self.modo_de_juego = Modo_De_Juego.NOTSET
         self.modo_de_generacion = Modo_De_Generacion.NOTSET
         self.diccionario_de_celdas = {}
+        self.celulas_random = 0
+        self.contador_vidas_estaticas = 0
 
     def random(self, celulas_vivas):
-        if(celulas_vivas > 0 and celulas_vivas < len(self.tablero)*len(self.tablero)):
+        self.celulas_random = celulas_vivas
+        if(celulas_vivas > 0 and celulas_vivas < len(self.tablero)*len(self.tablero[0])):
             combinaciones = []
             for fila in range(len(self.tablero)):
                 for columna in range(len(self.tablero)):
@@ -59,25 +64,74 @@ class Tablero():
                         new_gen.tablero[x][y] = Celula.VIVA
         self.tablero_antiguo = self.tablero
         self.tablero = new_gen.tablero
+        self.cantidad_vidas_estaticas()
+
+    def cantidad_vidas_estaticas(self):
+        son_iguales = True
+        for x in range(len(self.tablero)):
+            for y in range(len(self.tablero[0])):
+                if self.tablero[x][y] != self.tablero_antiguo[x][y]:
+                    son_iguales = False
+        if son_iguales:
+            self.contador_vidas_estaticas += 1
+        else:
+            self.contador_vidas_estaticas = 0
 
     def consultar_estaticas(self):
         if self.diccionario_de_celdas == {}:
-            for x in range(len(self.tablero_antiguo)):
-                for y in range(len(self.tablero_antiguo[x])):
+            for x in range(len(self.tablero)):
+                for y in range(len(self.tablero[x])):
                     self.diccionario_de_celdas[(x, y)] = 0
 
+        self.actualizar_celulas()
         for x in range(len(self.tablero)):
             for y in range(len(self.tablero[0])):
                 if self.tablero[x][y] == self.tablero_antiguo[x][y]:
                     self.diccionario_de_celdas[(x, y)] = self.diccionario_de_celdas[(x, y)] + 1
-                    if self.diccionario_de_celdas[(x, y)] >= 3:
-                        print('La celda ' + str(self.tablero[x][y].name.capitalize()) + ' ubicada en la fila '
-                              + str(x) + ' y la columna ' + str(y) + ' es estática.')
                 elif self.tablero[x][y] != self.tablero_antiguo[x][y]:
                     self.diccionario_de_celdas[(x, y)] = 0
 
+    def vida_estatica(self):
+        tableros_estaticos = []
+        if (self.celulas_random <= (len(self.tablero) * len(self.tablero[0]))):
+            for x in combinations(range(len(self.tablero) * len(self.tablero[0])), self.celulas_random):
+                self.tablero = Tablero(len(self.tablero), len(self.tablero[0])).tablero
+                self.contador_vidas_estaticas = 0
+                self.diccionario_de_celdas = {}
+                encontro = True
+                contador = 0
+                for posicion_tupla in x:
+                    coordenadas = (
+                        posicion_tupla // len(self.tablero[0]),
+                        posicion_tupla % len(self.tablero[0]))
+                    self.set_value(coordenadas[0], coordenadas[1], Celula.VIVA)
+
+                while self.contador_vidas_estaticas < 3:
+                    self.consultar_estaticas()
+                    contador += 1
+                    if contador > 30:
+                        encontro = False
+                        break
+
+                if (not encontro):
+                    self.limpiar()
+                    print("Combinación: " + str(x))
+                    print("Tablero estático encontrado: ")
+                    self.imprimir_tablero()
+                    tableros_estaticos.append(self)
+        else:
+            raise IndexError
+        self.limpiar()
+        print("Tableros estáticos encontrados: ")
+        for t in tableros_estaticos:
+            t.imprimir_tablero()
+            print("---------------------------")
+
     def imprimir_tablero(self):
         print('\n'.join([''.join(['{:3}'.format(Celula.value) for Celula in row]) for row in self.tablero]))
+
+    def limpiar(self):
+        os.system('cls' if os.name=='nt' else 'clear')
 
 class Celula(Enum):
     MUERTA = '-'

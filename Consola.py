@@ -20,8 +20,8 @@ class Menu():
                                 'Ingrese el tamaño en formato "fila x columna":').split('x')]
                             if fila > 30 or columna > 60:
                                 raise Exception('Las dimensiones del tablero no deben superar a 30x60.')
-                            if fila < 5 or columna < 5:
-                                raise Exception('Las dimensiones del tablero deben superar a 5x5.')
+                            if fila < 3 or columna < 3:
+                                raise Exception('Las dimensiones del tablero deben superar a 3x3.')
                             self.tablero = Tablero(fila, columna)
                             break
                         except Exception as e:
@@ -37,38 +37,42 @@ class Menu():
                                                                      '1 - Normal \n'
                                                                      '2 - Vida Estática \n' 
                                                                      '0 - Salir \n', True))
-                if self.tablero.modo_de_juego != Modo_De_Juego.NOTSET and self.tablero.modo_de_generacion == Modo_De_Generacion.NOTSET:
+                if self.tablero.modo_de_juego == Modo_De_Juego.NORMAL and self.tablero.modo_de_generacion == Modo_De_Generacion.NOTSET:
                     self.tablero.modo_de_generacion = self.leer_entero('Seleccione el método de generación: \n'
                                                                          '1 - Aleatorio \n'
                                                                          '2 - Manual \n' 
                                                                          '0 - Salir \n', True)
                     if self.tablero.modo_de_generacion == Modo_De_Generacion.RANDOM:
                         self.tablero.random(self.leer_entero('Ingresar número de celulas vivas:'))
-                        self.tablero.imprimir_tablero()
                     elif self.tablero.modo_de_generacion == Modo_De_Generacion.MANUAL:
                         self.editar_tablero()
                     elif self.tablero.modo_de_generacion == Modo_De_Generacion.NOTSET:
                         break
+                elif self.tablero.modo_de_juego == Modo_De_Juego.VIDA_ESTATICA:
+                    self.tablero.random(self.leer_entero('Ingresar número de celulas vivas:'))
                 # Inicia el juego
                 self.limpiar()
                 self.tablero.imprimir_tablero()
                 while True:
-                     self.accion = self.leer_entero('1 - Siguiente Generación \n'
-                                                    '2 - Editar \n'
-                                                    '3 - Guardar \n'
-                                                    '0 - Salir \n', True)
-                     if self.accion == Accion.SIGUENTE:
-                        self.limpiar()
-                        self.tablero.actualizar_celulas()
-                        self.tablero.imprimir_tablero()
-                        if self.tablero.modo_de_juego == Modo_De_Juego.VIDA_ESTATICA:
-                            self.tablero.consultar_estaticas()
-                     elif self.accion == Accion.EDITAR:
-                         self.editar_tablero()
-                     elif self.accion == Accion.GUARDAR:
-                         persistencia.guardar(self.tablero, self.leer_string('Ingrese el nombre de la partida:'))
-                     elif self.accion == Accion.SALIR:
-                         break
+                    if self.tablero.modo_de_juego == Modo_De_Juego.NORMAL:
+                        self.accion = self.leer_entero('1 - Siguiente Generación \n'
+                                                        '2 - Editar \n'
+                                                        '3 - Guardar \n'
+                                                        '0 - Salir \n', True)
+                        if self.accion == Accion.SIGUENTE:
+                           self.limpiar()
+                           self.tablero.actualizar_celulas()
+                           self.tablero.imprimir_tablero()
+                        elif self.accion == Accion.EDITAR:
+                            self.editar_tablero()
+                        elif self.accion == Accion.GUARDAR:
+                            persistencia.guardar(self.tablero, self.leer_string('Ingrese el nombre de la partida:'))
+                        elif self.accion == Accion.SALIR:
+                            break
+                    elif self.tablero.modo_de_juego == Modo_De_Juego.VIDA_ESTATICA:
+                        self.tablero.vida_estatica()
+                        self.leer_string('Presione la tecla "Enter" para continuar...')
+                        break
 
             except KeyboardInterrupt:
                 persistencia.guardar(self.tablero, self.leer_string('Ingrese el nombre de la partida:'))
