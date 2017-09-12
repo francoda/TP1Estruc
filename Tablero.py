@@ -42,7 +42,7 @@ class Tablero():
                     self.tablero[0]))):  # Verifica que este dentro del tablero
                 if (self.tablero[fila + x][columna + y] == Celula.VIVA):
                     celdas_vivas_alrededor += 1
-            return celdas_vivas_alrededor
+        return celdas_vivas_alrededor
 
     def actualizar_celulas(self):
         tablero_new_gen = Tablero(len(self.tablero), len(self.tablero[0]))
