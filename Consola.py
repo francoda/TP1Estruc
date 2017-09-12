@@ -25,9 +25,9 @@ class Menu():
                             self.tablero = Tablero(fila, columna)
                             break
                         except Exception as e:
-                            self.leer_string(str(e) + ' \n Presione Enter para continuar...')
+                            self.leer_string(str(e) + ' \n Presione la tecla "Enter" para continuar...')
                 elif self.menu_principal == Menu_Principal.CARGAR_PARTIDA:
-                    self.tablero = persistencia.cargar('', 'Default')
+                    self.tablero = persistencia.cargar(self.leer_string('Ingrese el nombre de la partida:'))
                 elif self.menu_principal == Menu_Principal.SALIR:
                     break #Cierro el programa
                 self.limpiar()
@@ -53,25 +53,27 @@ class Menu():
                 self.limpiar()
                 self.tablero.imprimir_tablero()
                 while True:
-                    self.accion = self.leer_entero('1 - Siguiente Generación \n'
-                                                   '2 - Editar \n'
-                                                   '3 - Guardar \n'
-                                                   '0 - Salir \n', True)
-                    if self.accion == Accion.SIGUENTE:
+                     self.accion = self.leer_entero('1 - Siguiente Generación \n'
+                                                    '2 - Editar \n'
+                                                    '3 - Guardar \n'
+                                                    '0 - Salir \n', True)
+                     if self.accion == Accion.SIGUENTE:
                         self.limpiar()
                         self.tablero.actualizar_celulas()
                         self.tablero.imprimir_tablero()
-                    elif self.accion == Accion.EDITAR:
-                        self.editar_tablero()
-                    elif self.accion == Accion.GUARDAR:
-                        persistencia.guardar('', self.tablero, 'Default')
-                    elif self.accion == Accion.SALIR:
-                        break
+                        if self.tablero.modo_de_juego == Modo_De_Juego.VIDA_ESTATICA:
+                            self.tablero.consultar_estaticas()
+                     elif self.accion == Accion.EDITAR:
+                         self.editar_tablero()
+                     elif self.accion == Accion.GUARDAR:
+                         persistencia.guardar(self.tablero, self.leer_string('Ingrese el nombre de la partida:'))
+                     elif self.accion == Accion.SALIR:
+                         break
 
             except KeyboardInterrupt:
-                persistencia.guardar('', self.tablero, 'Default')
+                persistencia.guardar(self.tablero, self.leer_string('Ingrese el nombre de la partida:'))
             except Exception as e:
-                self.leer_string(str(e) + ' \n Presione Enter para continuar...')
+                self.leer_string(str(e) + ' \n Presione la tecla "Enter" para continuar...')
 
     def editar_tablero(self):
         while True:
@@ -85,7 +87,8 @@ class Menu():
                                     '0 - Iniciar Juego \n') == 0:
                     break
             except Exception as e:
-                self.leer_string(str(e) + ' \n Presione enter para continuar')
+                self.leer_string(str(e) + ' \n Presione la tecla "Enter" para continuar')
+        self.limpiar()
 
     def leer_entero(self, texto, tomar_valores=False):
         valor = ''
@@ -123,6 +126,7 @@ class Accion(IntEnum):
     SALIR = 0
     SIGUENTE = 1
     EDITAR = 2
+    GUARDAR = 3
 
 if __name__ == '__main__':
     Menu()
