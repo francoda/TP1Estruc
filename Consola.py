@@ -7,6 +7,7 @@ class Menu():
     def __init__(self):
         while True:
             try:
+                self.limpiar()
                 self.menu_principal = self.leer_entero('Menú Principal: \n'
                                                          '1 - Nuevo Juego \n'
                                                          '2 - Cargar Partida \n' 
@@ -24,11 +25,12 @@ class Menu():
                             self.tablero = Tablero(fila, columna)
                             break
                         except Exception as e:
-                            self.leer_string(str(e) + ' \n Presione cualquier tecla para continuar')
+                            self.leer_string(str(e) + ' \n Presione enter para continuar')
                 elif self.menu_principal == Menu_Principal.CARGAR_PARTIDA:
                     self.tablero = persistencia.cargar('', 'Default')
                 elif self.menu_principal == Menu_Principal.SALIR:
                     break #Cierro el programa
+                self.limpiar()
                 # Cargo Configuraciones si no estan seteadas
                 if self.tablero.modo_de_juego == Modo_De_Juego.NOTSET:
                     self.tablero.modo_de_juego = (self.leer_entero('Seleccione modo de juego: \n'
@@ -48,49 +50,53 @@ class Menu():
                             try:
                                 fila, columna = [int(x) for x in self.leer_string(
                                     'Ingresar coordenadas de la célula que desea modificar en formato "fila x columna":').split('x')]
+                                self.limpiar()
                                 self.tablero.set_value(fila, columna)
                                 self.tablero.imprimir_tablero()
                                 if self.leer_entero('1 - Modificar otra célula \n'
-                                                    '0 - Iniciar Juego') == 0:
+                                                    '0 - Iniciar Juego \n') == 0:
                                     break
                             except Exception as e:
-                                self.leer_string(str(e) + ' \n Presione cualquier tecla para continuar')
+                                self.leer_string(str(e) + ' \n Presione enter para continuar')
                 # Inicia el juego
+                self.limpiar()
+                self.tablero.imprimir_tablero()
                 while True:
                     self.leer_entero('1 - Siguiente Generacion \n'
                                      '2 - Editar \n'
                                      '3 - Guardar \n'
                                      '0 - Salir \n', True)
+                    self.limpiar()
                     self.tablero.actualizar_celulas()
                     self.tablero.imprimir_tablero()
             except KeyboardInterrupt:
                 persistencia.guardar('', self.tablero, 'Default')
             except Exception as e:
-                self.leer_string(str(e) + ' \n Presione cualquier tecla para continuar')
+                self.leer_string(str(e) + ' \n Presione enter para continuar')
 
     def leer_entero(self, texto, tomar_valores=False):
         valor = ''
         while valor == '':
             try:
-                self.limpiar()
-                valor = eval(input(texto))
+                valor = int(input(texto))
                 if tomar_valores:
                     valores = [int(s) for s in texto.split() if s.isdigit()]
                     if valor in valores:
                         return valor
+                    else:
+                        raise IndexError
                 else:
                     return valor
             except:
-                print('Por favor, ingrese un numero correspondiente al menu: {' + [int(s) for s in texto.split() if s.isdigit()] + '}')
+                print('Por favor, ingrese un numero correspondiente al menu:' + str([int(s) for s in texto.split() if s.isdigit()]))
             valor = ''
 
     def leer_string(self, texto):
         while True:
-            #try:
-                self.limpiar()
+            try:
                 return input(texto)
-            #except:
-            #    pass
+            except:
+                pass
 
     def limpiar(self):
         os.system('cls' if os.name=='nt' else 'clear')
