@@ -51,10 +51,10 @@ class Tablero():
                 adjacentes = self.calcular_adjacentes_vivos(x, y)
                 if (self.tablero[x][y] == Celula.MUERTA):
                     if (adjacentes >= 3):
-                        new_gen[x][y] = Celula.VIVA
+                        new_gen.tablero[x][y] = Celula.VIVA
                 else:
                     if adjacentes == 2 or adjacentes == 3:
-                        new_gen[x][y] = Celula.VIVA
+                        new_gen.tablero[x][y] = Celula.VIVA
         self.tablero = new_gen.tablero
 
     def imprimir_tablero(self):
