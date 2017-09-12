@@ -45,17 +45,17 @@ class Tablero():
             return celdas_vivas_alrededor
 
     def actualizar_celulas(self):
-        tablero_new_gen = Tablero(len(self.tablero), len(self.tablero[0]))
+        new_gen = Tablero(len(self.tablero), len(self.tablero[0]))
         for x in range(len(self.tablero)):
             for y in range(len(self.tablero[x])):
                 adjacentes = self.calcular_adjacentes_vivos(x, y)
                 if (self.tablero[x][y] == Celula.MUERTA):
                     if (adjacentes >= 3):
-                        tablero_new_gen.tablero[x][y] = Celula.VIVA
+                        new_gen[x][y] = Celula.VIVA
                 else:
                     if adjacentes == 2 or adjacentes == 3:
-                        tablero_new_gen.tablero[x][y] = Celula.VIVA
-        self.tablero = tablero_new_gen.tablero
+                        new_gen[x][y] = Celula.VIVA
+        self.matriz = new_gen.tablero
 
     def imprimir_tablero(self):
         print('\n'.join([''.join(['{:4}'.format(Celula.value) for Celula in row]) for row in self.tablero]))
