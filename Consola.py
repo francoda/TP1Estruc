@@ -17,15 +17,15 @@ class Menu():
                     while True:
                         try:
                             fila, columna = [int(x) for x in self.leer_string(
-                                'Ingresar tamaño en formato "fila x columna":').split('x')]
+                                'Ingrese el tamaño en formato "fila x columna":').split('x')]
                             if fila > 30 or columna > 60:
-                                raise Exception('Las dimeciones del tablero no deben superar a 30x60')
+                                raise Exception('Las dimensiones del tablero no deben superar a 30x60.')
                             if fila < 5 or columna < 5:
-                                raise Exception('Las dimeciones del tablero deben superar a 5x5')
+                                raise Exception('Las dimensiones del tablero deben superar a 5x5.')
                             self.tablero = Tablero(fila, columna)
                             break
                         except Exception as e:
-                            self.leer_string(str(e) + ' \n Presione enter para continuar')
+                            self.leer_string(str(e) + ' \n Presione Enter para continuar...')
                 elif self.menu_principal == Menu_Principal.CARGAR_PARTIDA:
                     self.tablero = persistencia.cargar('', 'Default')
                 elif self.menu_principal == Menu_Principal.SALIR:
@@ -33,12 +33,12 @@ class Menu():
                 self.limpiar()
                 # Cargo Configuraciones si no estan seteadas
                 if self.tablero.modo_de_juego == Modo_De_Juego.NOTSET:
-                    self.tablero.modo_de_juego = (self.leer_entero('Seleccione modo de juego: \n'
+                    self.tablero.modo_de_juego = (self.leer_entero('Seleccione el modo de juego: \n'
                                                                      '1 - Normal \n'
                                                                      '2 - Vida Estática \n' 
                                                                      '0 - Salir \n', True))
                 if self.tablero.modo_de_juego != Modo_De_Juego.NOTSET and self.tablero.modo_de_generacion == Modo_De_Generacion.NOTSET:
-                    self.tablero.modo_de_generacion = self.leer_entero('Seleccione metodo de generación: \n'
+                    self.tablero.modo_de_generacion = self.leer_entero('Seleccione el método de generación: \n'
                                                                          '1 - Aleatorio \n'
                                                                          '2 - Manual \n' 
                                                                          '0 - Salir \n', True)
@@ -53,7 +53,7 @@ class Menu():
                 self.limpiar()
                 self.tablero.imprimir_tablero()
                 while True:
-                    self.accion = self.leer_entero('1 - Siguiente Generacion \n'
+                    self.accion = self.leer_entero('1 - Siguiente Generación \n'
                                                    '2 - Editar \n'
                                                    '3 - Guardar \n'
                                                    '0 - Salir \n', True)
@@ -71,7 +71,7 @@ class Menu():
             except KeyboardInterrupt:
                 persistencia.guardar('', self.tablero, 'Default')
             except Exception as e:
-                self.leer_string(str(e) + ' \n Presione enter para continuar')
+                self.leer_string(str(e) + ' \n Presione Enter para continuar...')
 
     def editar_tablero(self):
         while True:
@@ -101,7 +101,7 @@ class Menu():
                 else:
                     return valor
             except:
-                print('Por favor, ingrese un numero correspondiente al menu:' + str([int(s) for s in texto.split() if s.isdigit()]))
+                print('Por favor, ingrese un número correspondiente al menú:' + str([int(s) for s in texto.split() if s.isdigit()]))
             valor = ''
 
     def leer_string(self, texto):
@@ -123,7 +123,6 @@ class Accion(IntEnum):
     SALIR = 0
     SIGUENTE = 1
     EDITAR = 2
-    GUARDAR = 3
 
 if __name__ == '__main__':
     Menu()
