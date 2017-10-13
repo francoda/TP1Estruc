@@ -3,22 +3,27 @@ import os
 
 class persistencia(object):
 
-    def __init__(self):
-        pass
+    @staticmethod
+    def printList():
+        partidas = shelve.open('Partidas')
+        for nombre, tablero in partidas.items():
+            print(nombre)
+            tablero.imprimir_tablero()
+        partidas.close()
 
     @staticmethod
     def guardar(tablero_celular, nombre):
-        modulo_guardado = shelve.open('Partidas')
-        modulo_guardado[nombre] = tablero_celular
-        modulo_guardado.close()
+        partidas = shelve.open('Partidas')
+        partidas[nombre] = tablero_celular
+        partidas.close()
         print("Tablero guardado con éxito.")
 
     @staticmethod
     def cargar(nombre):
-        modulo_a_cargar = shelve.open('Partidas')
+        partidas = shelve.open('Partidas')
 
-        if nombre in modulo_a_cargar:
-            tablero_celular = modulo_a_cargar[nombre]
+        if nombre in partidas:
+            tablero_celular = partidas[nombre]
             print("Tablero cargado con éxito.")
             return tablero_celular
         else:

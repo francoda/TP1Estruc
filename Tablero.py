@@ -13,6 +13,22 @@ class Tablero():
         self.diccionario_de_celdas = {}
         self.celulas_random = 0
         self.contador_vidas_estaticas = 0
+        self.finalizo = False
+
+    def __eq__(self, other):
+        if isinstance(other, Tablero):
+            for x in range(len(self.tablero)):
+                for y in range(len(self.tablero[0])):
+                    if self.tablero[x][y] != self.tablero_antiguo[x][y]:
+                        return False
+            return True
+        return NotImplemented
+
+    def __ne__(self, other):
+        result = self.__eq__(other)
+        if result is NotImplemented:
+            return result
+        return not result
 
     def random(self, celulas_vivas):
         self.celulas_random = celulas_vivas
@@ -42,9 +58,8 @@ class Tablero():
             self.tablero[fila][columna] = valor
 
     def calcular_adjacentes_vivos(self, fila, columna):
-        distancia_de_celdas = [(-1, -1), (-1, 0), (-1, 1), (0, -1), (0, 1), (1, -1), (1, 0), (1, 1)]
         celdas_vivas_alrededor = 0
-        for x, y in distancia_de_celdas:
+        for x, y in [(-1, -1), (-1, 0), (-1, 1), (0, -1), (0, 1), (1, -1), (1, 0), (1, 1)]:
             if (fila + x >= 0 and fila + x < len(self.tablero) and (columna + y >= 0 and columna + y < len(
                     self.tablero[0]))):  # Verifica que este dentro del tablero
                 if (self.tablero[fila + x][columna + y] == Celula.VIVA):
@@ -62,20 +77,7 @@ class Tablero():
                 else:
                     if adjacentes == 2 or adjacentes == 3:
                         new_gen.tablero[x][y] = Celula.VIVA
-        self.tablero_antiguo = self.tablero
-        self.tablero = new_gen.tablero
-        self.cantidad_vidas_estaticas()
-
-    def cantidad_vidas_estaticas(self):
-        son_iguales = True
-        for x in range(len(self.tablero)):
-            for y in range(len(self.tablero[0])):
-                if self.tablero[x][y] != self.tablero_antiguo[x][y]:
-                    son_iguales = False
-        if son_iguales:
-            self.contador_vidas_estaticas += 1
-        else:
-            self.contador_vidas_estaticas = 0
+        self.finalizo = self == new_gen
 
     def consultar_estaticas(self):
         if self.diccionario_de_celdas == {}:
@@ -102,7 +104,7 @@ class Tablero():
                 contador = 0
                 for posicion_tupla in x:
                     coordenadas = (
-                        posicion_tupla // len(self.tablero[0]),
+                        posicion_tupla // len(self.tablero),
                         posicion_tupla % len(self.tablero[0]))
                     self.set_value(coordenadas[0], coordenadas[1], Celula.VIVA)
 

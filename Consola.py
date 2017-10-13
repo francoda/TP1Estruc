@@ -1,5 +1,6 @@
 from Tablero import *
 from Persistencia import *
+from Excepciones import *
 import os
 
 class Menu():
@@ -16,18 +17,22 @@ class Menu():
                 if self.menu_principal == Menu_Principal.NUEVO_JUEGO:
                     while True:
                         try:
-                            fila, columna = [int(x) for x in self.leer_string(
-                                'Ingrese el tamaño en formato "fila x columna":').split('x')]
-                            if fila > 30 or columna > 60:
-                                raise Exception('Las dimensiones del tablero no deben superar a 30x60.')
-                            if fila < 3 or columna < 3:
-                                raise Exception('Las dimensiones del tablero deben superar a 3x3.')
-                            self.tablero = Tablero(fila, columna)
-                            break
-                        except Exception as e:
-                            self.leer_string(str(e) + ' \n Presione la tecla "Enter" para continuar...')
+                            valores = [int(x) for x in input('Ingrese el tamaño en formato "fila x columna":').split('x')]
+                            if len(valores) != 2:
+                                raise FormatoIncorrecto('Las dimensiones del tablero requieren que sean expresadas en formato "fila x columna". Ej:5x5.')
+                            else:
+                                fila, columna = valores
+                                if fila > 30 or columna > 60:
+                                    raise FormatoIncorrecto('Las dimensiones del tablero no deben superar a 30x60.')
+                                if fila < 3 or columna < 3:
+                                    raise FormatoIncorrecto('Las dimensiones del tablero deben superar a 3x3.')
+                                self.tablero = Tablero(fila, columna)
+                                break
+                        except FormatoIncorrecto as e:
+                            input(str(e) + ' \n Presione la tecla "Enter" para continuar...')
                 elif self.menu_principal == Menu_Principal.CARGAR_PARTIDA:
-                    self.tablero = persistencia.cargar(self.leer_string('Ingrese el nombre de la partida:'))
+                    persistencia.printList()
+                    self.tablero = persistencia.cargar(input('Ingrese el nombre de la partida:'))
                 elif self.menu_principal == Menu_Principal.SALIR:
                     break #Cierro el programa
                 self.limpiar()
@@ -66,23 +71,23 @@ class Menu():
                         elif self.accion == Accion.EDITAR:
                             self.editar_tablero()
                         elif self.accion == Accion.GUARDAR:
-                            persistencia.guardar(self.tablero, self.leer_string('Ingrese el nombre de la partida:'))
+                            persistencia.guardar(self.tablero, input('Ingrese el nombre de la partida:'))
                         elif self.accion == Accion.SALIR:
                             break
                     elif self.tablero.modo_de_juego == Modo_De_Juego.VIDA_ESTATICA:
                         self.tablero.vida_estatica()
-                        self.leer_string('Presione la tecla "Enter" para continuar...')
+                        input('Presione la tecla "Enter" para continuar...')
                         break
 
             except KeyboardInterrupt:
-                persistencia.guardar(self.tablero, self.leer_string('Ingrese el nombre de la partida:'))
+                persistencia.guardar(self.tablero, input('Ingrese el nombre de la partida:'))
             except Exception as e:
-                self.leer_string(str(e) + ' \n Presione la tecla "Enter" para continuar...')
+                input(str(e) + ' \n Presione la tecla "Enter" para continuar...')
 
     def editar_tablero(self):
         while True:
             try:
-                fila, columna = [int(x) for x in self.leer_string(
+                fila, columna = [int(x) for x in input(
                     'Ingresar coordenadas de la célula que desea modificar en formato "fila x columna":').split('x')]
                 self.limpiar()
                 self.tablero.set_value(fila, columna)
@@ -91,7 +96,7 @@ class Menu():
                                     '0 - Iniciar Juego \n') == 0:
                     break
             except Exception as e:
-                self.leer_string(str(e) + ' \n Presione la tecla "Enter" para continuar')
+                input(str(e) + ' \n Presione la tecla "Enter" para continuar')
         self.limpiar()
 
     def leer_entero(self, texto, tomar_valores=False):
@@ -110,13 +115,6 @@ class Menu():
             except:
                 print('Por favor, ingrese un número correspondiente al menú:' + str([int(s) for s in texto.split() if s.isdigit()]))
             valor = ''
-
-    def leer_string(self, texto):
-        while True:
-            try:
-                return input(texto)
-            except:
-                pass
 
     def limpiar(self):
         os.system('cls' if os.name=='nt' else 'clear')
