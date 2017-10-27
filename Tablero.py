@@ -43,8 +43,8 @@ class Tablero():
                 self.tablero[combinacion_random[0]][combinacion_random[1]] = Celula.VIVA
                 celulas_vivas -= 1
         else:
-            raise IndexError('Debe ingresar un numero mayor a 0' if celulas_vivas > 0 else
-                             'Debe ingresar un numero menor a ' + str(len(self.tablero) * len(self.tablero[0])))
+            raise IndexError('Debe ingresar un numero menor a ' + str(len(self.tablero) * len(self.tablero[0])) if celulas_vivas > 0 else
+                             'Debe ingresar un numero mayor a 0')
 
     def set_value(self, fila, columna, valor=''):
         fila -= 1
@@ -138,3 +138,4 @@ class Modo_De_Generacion(IntEnum):
     NOTSET = 0
     RANDOM = 1
     MANUAL = 2
+
