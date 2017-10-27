@@ -56,13 +56,13 @@ class Menu():
                                                                              '2 - Manual \n' 
                                                                              '0 - Salir \n', True)
                         if self.tablero.modo_de_generacion == Modo_De_Generacion.RANDOM:
-                            self.tablero.random(self.leer_entero('Ingresar número de celulas vivas:'))
+                            self.tablero.random(self.leer_entero('Ingresar número de células vivas:'))
                         elif self.tablero.modo_de_generacion == Modo_De_Generacion.MANUAL:
                             self.editar_tablero()
                         elif self.tablero.modo_de_generacion == Modo_De_Generacion.NOTSET:
                             break
                     elif self.tablero.modo_de_juego == Modo_De_Juego.VIDA_ESTATICA and self.tablero.celulas_random == 0:
-                        self.tablero.random(self.leer_entero('Ingresar número de celulas vivas:'))
+                        self.tablero.random(self.leer_entero('Ingresar número de células vivas:'))
                     self.limpiar()
                     # Inicia el juego
                     print(self.tablero.impresion_tablero())
@@ -82,6 +82,8 @@ class Menu():
                                 if self.tablero.modo_de_juego == Modo_De_Juego.NORMAL:
                                     time.sleep(0.1)
                                 if self.tablero.finalizo:
+                                    input('Se encontró un tablero estatico.' if self.tablero.estatico else 'Juego ha finalizado.' +
+                                    '\nPresione la tecla "Enter" para volver al Menu Principal...')
                                     break
                                 self.limpiar()
                                 self.tablero.actualizar_celulas()
