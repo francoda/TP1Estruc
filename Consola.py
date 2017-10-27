@@ -59,6 +59,7 @@ class Menu():
                             while True:
                                 try:
                                     self.tablero.random(self.leer_entero('Ingresar número de células vivas:'))
+                                    break
                                 except IndexError as ex:
                                     print(str(ex))
                         elif self.tablero.modo_de_generacion == Modo_De_Generacion.MANUAL:
