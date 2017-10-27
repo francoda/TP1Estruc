@@ -2,24 +2,24 @@ import random
 import os
 from enum import Enum, IntEnum
 from Material.combination import combinations
+from Excepciones import *
 
 class Tablero():
 
     def __init__(self, filas, columnas):
         self.tablero = [[Celula.MUERTA] * columnas for _ in range(filas)]
-        self.tablero_antiguo = None
+        self.logTableros = []
         self.modo_de_juego = Modo_De_Juego.NOTSET
         self.modo_de_generacion = Modo_De_Generacion.NOTSET
-        self.diccionario_de_celdas = {}
         self.celulas_random = 0
-        self.contador_vidas_estaticas = 0
         self.finalizo = False
+        self.estatico = False
 
     def __eq__(self, other):
         if isinstance(other, Tablero):
             for x in range(len(self.tablero)):
                 for y in range(len(self.tablero[0])):
-                    if self.tablero[x][y] != self.tablero_antiguo[x][y]:
+                    if self.tablero[x][y] != other.tablero[x][y]:
                         return False
             return True
         return NotImplemented
@@ -51,7 +51,7 @@ class Tablero():
         if fila < 0 and columna < 0 and fila > len(self.tablero[0]) and fila > len(self.tablero):
             raise IndexError
         elif valor != '' and valor != Celula.MUERTA and valor != Celula.VIVA:
-            raise Exception('Valor incorrecto(Valores posibles:[ ' + str(Celula.MUERTA) + ' , ' + str(Celula.VIVA) + '])')
+            raise FormatoIncorrecto('Valor incorrecto(Valores posibles:[ ' + str(Celula.MUERTA) + ' , ' + str(Celula.VIVA) + '])')
         elif valor == '':
             self.tablero[fila][columna] = Celula.VIVA if self.tablero[fila][columna] == Celula.MUERTA else Celula.MUERTA
         else:
@@ -68,69 +68,57 @@ class Tablero():
 
     def actualizar_celulas(self):
         new_gen = Tablero(len(self.tablero), len(self.tablero[0]))
+        contador_vivas = 0
         for x in range(len(self.tablero)):
             for y in range(len(self.tablero[x])):
                 adjacentes = self.calcular_adjacentes_vivos(x, y)
                 if (self.tablero[x][y] == Celula.MUERTA):
                     if (adjacentes >= 3):
                         new_gen.tablero[x][y] = Celula.VIVA
+                        contador_vivas +=1
                 else:
                     if adjacentes == 2 or adjacentes == 3:
                         new_gen.tablero[x][y] = Celula.VIVA
-        self.finalizo = self == new_gen
-
-    def consultar_estaticas(self):
-        if self.diccionario_de_celdas == {}:
-            for x in range(len(self.tablero)):
-                for y in range(len(self.tablero[x])):
-                    self.diccionario_de_celdas[(x, y)] = 0
-
-        self.actualizar_celulas()
-        for x in range(len(self.tablero)):
-            for y in range(len(self.tablero[0])):
-                if self.tablero[x][y] == self.tablero_antiguo[x][y]:
-                    self.diccionario_de_celdas[(x, y)] = self.diccionario_de_celdas[(x, y)] + 1
-                elif self.tablero[x][y] != self.tablero_antiguo[x][y]:
-                    self.diccionario_de_celdas[(x, y)] = 0
+                        contador_vivas += 1
+        self.finalizo = self == new_gen or (len(self.logTableros) > 1 and self.logTableros[len(self.logTableros)-1] == new_gen) or contador_vivas == 0
+        self.estatico = self.finalizo and contador_vivas != 0
+        self.logTableros.append(new_gen)
+        self.tablero = new_gen.tablero
 
     def vida_estatica(self):
         tableros_estaticos = []
         if (self.celulas_random <= (len(self.tablero) * len(self.tablero[0]))):
             for x in combinations(range(len(self.tablero) * len(self.tablero[0])), self.celulas_random):
+                self.logTableros.clear()
+                self.finalizo = False
+                self.estatico = False
                 self.tablero = Tablero(len(self.tablero), len(self.tablero[0])).tablero
-                self.contador_vidas_estaticas = 0
-                self.diccionario_de_celdas = {}
-                encontro = True
-                contador = 0
                 for posicion_tupla in x:
-                    coordenadas = (
-                        posicion_tupla // len(self.tablero),
-                        posicion_tupla % len(self.tablero[0]))
-                    self.set_value(coordenadas[0], coordenadas[1], Celula.VIVA)
-
-                while self.contador_vidas_estaticas < 3:
-                    self.consultar_estaticas()
+                    self.set_value(posicion_tupla // len(self.tablero), posicion_tupla % len(self.tablero[0]), Celula.VIVA)
+                contador = 0
+                while not self.estatico:
+                    self.actualizar_celulas()
                     contador += 1
                     if contador > 30:
-                        encontro = False
                         break
 
-                if (not encontro):
+                if self.estatico:
                     self.limpiar()
-                    print("Combinación: " + str(x))
+                    conbinacion = "Combinación: " + str(x)
+                    print(conbinacion)
                     print("Tablero estático encontrado: ")
-                    self.imprimir_tablero()
-                    tableros_estaticos.append(self)
+                    impresion = self.impresion_tablero()
+                    print(impresion)
+                    tableros_estaticos.append(conbinacion + '\n' + impresion)
         else:
             raise IndexError
         self.limpiar()
         print("Tableros estáticos encontrados: ")
         for t in tableros_estaticos:
-            t.imprimir_tablero()
-            print("---------------------------")
+            print(t)
 
-    def imprimir_tablero(self):
-        print('\n'.join([''.join(['{:3}'.format(Celula.value) for Celula in row]) for row in self.tablero]))
+    def impresion_tablero(self):
+        return '\n'.join([''.join(['{:2}'.format(Celula.value) for Celula in row]) for row in self.tablero])
 
     def limpiar(self):
         os.system('cls' if os.name=='nt' else 'clear')
@@ -142,7 +130,8 @@ class Celula(Enum):
 class Modo_De_Juego(IntEnum):
     NOTSET = 0
     NORMAL = 1
-    VIDA_ESTATICA = 2
+    PASOAPASO = 2
+    VIDA_ESTATICA = 3
 
 class Modo_De_Generacion(IntEnum):
     NOTSET = 0

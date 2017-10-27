@@ -8,7 +8,7 @@ class persistencia(object):
         partidas = shelve.open('Partidas')
         for nombre, tablero in partidas.items():
             print(nombre)
-            tablero.imprimir_tablero()
+            print(tablero.impresion_tablero())
         partidas.close()
 
     @staticmethod
@@ -27,5 +27,5 @@ class persistencia(object):
             print("Tablero cargado con éxito.")
             return tablero_celular
         else:
-            raise Exception('El nombre ingresado no corresponde a una partida previamente guardada')
+            raise IOError('El nombre ingresado no corresponde a una partida previamente guardada')
 
