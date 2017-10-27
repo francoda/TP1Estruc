@@ -56,13 +56,24 @@ class Menu():
                                                                              '2 - Manual \n' 
                                                                              '0 - Salir \n', True)
                         if self.tablero.modo_de_generacion == Modo_De_Generacion.RANDOM:
-                            self.tablero.random(self.leer_entero('Ingresar número de células vivas:'))
+                            while True:
+                                try:
+                                    self.tablero.random(self.leer_entero('Ingresar número de células vivas:'))
+                                except IndexError as ex:
+                                    print(str(ex))
                         elif self.tablero.modo_de_generacion == Modo_De_Generacion.MANUAL:
                             self.editar_tablero()
                         elif self.tablero.modo_de_generacion == Modo_De_Generacion.NOTSET:
                             break
                     elif self.tablero.modo_de_juego == Modo_De_Juego.VIDA_ESTATICA and self.tablero.celulas_random == 0:
-                        self.tablero.random(self.leer_entero('Ingresar número de células vivas:'))
+                        while True:
+                            try:
+                                self.tablero.random(self.leer_entero('Ingresar número de células vivas:'))
+                                break
+                            except IndexError as ex:
+                                print(str(ex))
+                    elif self.tablero.modo_de_juego == Modo_De_Juego.NOTSET:
+                        break
                     self.limpiar()
                     # Inicia el juego
                     print(self.tablero.impresion_tablero())
@@ -82,8 +93,8 @@ class Menu():
                                 if self.tablero.modo_de_juego == Modo_De_Juego.NORMAL:
                                     time.sleep(0.1)
                                 if self.tablero.finalizo:
-                                    input('Se encontró un tablero estatico.' if self.tablero.estatico else 'Juego ha finalizado.' +
-                                    '\nPresione la tecla "Enter" para volver al Menu Principal...')
+                                    input('Se encontró un tablero estatico.' if self.tablero.estatico else 'El juego ha finalizado.' +
+                                    '\nPresione la tecla "Enter" para volver al menú principal...')
                                     break
                                 self.limpiar()
                                 self.tablero.actualizar_celulas()
@@ -124,17 +135,15 @@ class Menu():
         valor = ''
         while valor == '':
             try:
-                valor = int(input(texto))
-                if tomar_valores:
-                    valores = [int(s) for s in texto.split() if s.isdigit()]
-                    if valor in valores and valor >= 0:
-                        return valor
-                    else:
-                        raise IndexError
-                else:
-                    return valor
-            except:
-                print('Por favor, ingrese un número correspondiente al menú:' + str([int(s) for s in texto.split() if s.isdigit()]))
+                valor = input(texto)
+                if valor == '' or not valor.isdigit():
+                    raise IndexError('Por favor, ingrese un número.')
+                valor = int(valor)
+                if tomar_valores and not valor in [int(s) for s in texto.split() if s.isdigit()] and valor < 0:
+                    raise IndexError('Por favor, ingrese un número correspondiente al menú:' + str([int(s) for s in texto.split() if s.isdigit()]))
+                return valor
+            except IndexError as ex:
+                print(str(ex))
             valor = ''
 
     def limpiar(self):
