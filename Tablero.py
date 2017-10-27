@@ -35,7 +35,7 @@ class Tablero():
         if(celulas_vivas > 0 and celulas_vivas < len(self.tablero)*len(self.tablero[0])):
             combinaciones = []
             for fila in range(len(self.tablero)):
-                for columna in range(len(self.tablero)):
+                for columna in range(len(self.tablero[0])):
                     combinaciones.append((fila,columna))
             random.shuffle(combinaciones)
             while celulas_vivas > 0:

@@ -29,13 +29,13 @@ class Menu():
                             self.tablero = Tablero(fila, columna)
                             break
                     except FormatoIncorrecto as e:
-                        input(str(e) + ' \n Presione la tecla "Enter" para continuar...')
+                        print(str(e))
             elif self.menu_principal == Menu_Principal.CARGAR_PARTIDA:
                 try:
                     persistencia.printList()
                     self.tablero = persistencia.cargar(input('Ingrese el nombre de la partida:'))
                 except IOError:
-                    print('No se encontro una partida con ese nombre. Presione la tecla "Enter" para continuar...')
+                    input('No se encontro una partida con ese nombre. Presione la tecla "Enter" para continuar...')
             elif self.menu_principal == Menu_Principal.SALIR:
                 break #Cierro el programa
             self.limpiar()
@@ -61,7 +61,7 @@ class Menu():
                             self.editar_tablero()
                         elif self.tablero.modo_de_generacion == Modo_De_Generacion.NOTSET:
                             break
-                    elif self.tablero.modo_de_juego == Modo_De_Juego.VIDA_ESTATICA:
+                    elif self.tablero.modo_de_juego == Modo_De_Juego.VIDA_ESTATICA and self.tablero.celulas_random == 0:
                         self.tablero.random(self.leer_entero('Ingresar número de celulas vivas:'))
                     self.limpiar()
                     # Inicia el juego
@@ -92,8 +92,12 @@ class Menu():
                                 persistencia.guardar(self.tablero, input('Ingrese el nombre de la partida:'))
                             elif accion == Accion.SALIR:
                                 break
+                except IndexError:
+                    input('Por favor ingresar un valor valido.\nPresione la tecla "Enter" para continuar...')
                 except (KeyboardInterrupt):
                     persistencia.guardar(self.tablero, input('Ingrese el nombre de la partida:'))
+                except Exception as ex:
+                    input(str(ex) + '\nPresione la tecla "Enter" para continuar...')
 
     def editar_tablero(self):
         while True:
@@ -111,7 +115,7 @@ class Menu():
             except IndexError:
                 input('Las coordenadas exceden los limites del tablero. \n Presione la tecla "Enter" para continuar...')
             except (FormatoIncorrecto) as e:
-                input(str(e) + ' \n Presione la tecla "Enter" para continuar...')
+                input(str(e) + ' \nPresione la tecla "Enter" para continuar...')
         self.limpiar()
 
     def leer_entero(self, texto, tomar_valores=False):

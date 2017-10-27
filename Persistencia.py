@@ -16,7 +16,7 @@ class persistencia(object):
         partidas = shelve.open('Partidas')
         partidas[nombre] = tablero_celular
         partidas.close()
-        print("Tablero guardado con éxito.")
+        input('Tablero guardado con éxito.\nPresione la tecla "Enter" para continuar...')
 
     @staticmethod
     def cargar(nombre):
@@ -24,7 +24,7 @@ class persistencia(object):
 
         if nombre in partidas:
             tablero_celular = partidas[nombre]
-            print("Tablero cargado con éxito.")
+            print('Tablero cargado con éxito.\nPresione la tecla "Enter" para continuar...')
             return tablero_celular
         else:
             raise IOError('El nombre ingresado no corresponde a una partida previamente guardada')
