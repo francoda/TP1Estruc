@@ -52,7 +52,7 @@ class Tablero():
         if fila < 0 and columna < 0 and fila > len(self.tablero[0]) and fila > len(self.tablero):
             raise IndexError
         elif valor != '' and valor != Celula.MUERTA and valor != Celula.VIVA:
-            raise FormatoIncorrecto('Valor incorrecto(Valores posibles:[ ' + str(Celula.MUERTA) + ' , ' + str(Celula.VIVA) + '])')
+            raise FormatoIncorrecto('Valor incorrecto (Valores posibles:[ ' + str(Celula.MUERTA) + ' , ' + str(Celula.VIVA) + '])')
         elif valor == '':
             self.tablero[fila][columna] = Celula.VIVA if self.tablero[fila][columna] == Celula.MUERTA else Celula.MUERTA
         else:

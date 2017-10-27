@@ -17,9 +17,9 @@ class Menu():
             if self.menu_principal == Menu_Principal.NUEVO_JUEGO:
                 while True:
                     try:
-                        valores = input('Ingrese el tamaño en formato "fila x columna":').split('x')
+                        valores = input('Ingrese el tamaño en formato "fila x columna": ').split('x')
                         if len(valores) != 2 or not str(valores[0]).isnumeric() or not str(valores[1]).isnumeric():
-                            raise FormatoIncorrecto('Las dimensiones del tablero requieren que sean expresadas en formato "fila x columna". Ej:5x5.')
+                            raise FormatoIncorrecto('Las dimensiones del tablero requieren que sean expresadas en formato "fila x columna". Ej: 5x5.')
                         else:
                             fila, columna = (int (x) for x in valores)
                             if fila > 30 or columna > 60:
@@ -33,9 +33,9 @@ class Menu():
             elif self.menu_principal == Menu_Principal.CARGAR_PARTIDA:
                 try:
                     persistencia.printList()
-                    self.tablero = persistencia.cargar(input('Ingrese el nombre de la partida:'))
+                    self.tablero = persistencia.cargar(input('Ingrese el nombre de la partida: '))
                 except IOError:
-                    input('No se encontro una partida con ese nombre. Presione la tecla "Enter" para continuar...')
+                    input('No se encontro una partida con ese nombre. \nPresione la tecla "Enter" para continuar...')
             elif self.menu_principal == Menu_Principal.SALIR:
                 break #Cierro el programa
             self.limpiar()
@@ -58,7 +58,7 @@ class Menu():
                         if self.tablero.modo_de_generacion == Modo_De_Generacion.RANDOM:
                             while True:
                                 try:
-                                    self.tablero.random(self.leer_entero('Ingresar número de células vivas:'))
+                                    self.tablero.random(self.leer_entero('Ingresar número de células vivas: '))
                                     break
                                 except IndexError as ex:
                                     print(str(ex))
@@ -69,7 +69,7 @@ class Menu():
                     elif self.tablero.modo_de_juego == Modo_De_Juego.VIDA_ESTATICA and self.tablero.celulas_random == 0:
                         while True:
                             try:
-                                self.tablero.random(self.leer_entero('Ingresar número de células vivas:'))
+                                self.tablero.random(self.leer_entero('Ingresar número de células vivas: '))
                                 break
                             except IndexError as ex:
                                 print(str(ex))
@@ -103,22 +103,22 @@ class Menu():
                             elif accion == Accion.EDITAR:
                                 self.editar_tablero()
                             elif accion == Accion.GUARDAR:
-                                persistencia.guardar(self.tablero, input('Ingrese el nombre de la partida:'))
+                                persistencia.guardar(self.tablero, input('Ingrese el nombre de la partida: '))
                             elif accion == Accion.SALIR:
                                 break
                 except IndexError:
                     input('Por favor ingresar un valor valido.\nPresione la tecla "Enter" para continuar...')
                 except (KeyboardInterrupt):
-                    persistencia.guardar(self.tablero, input('Ingrese el nombre de la partida:'))
+                    persistencia.guardar(self.tablero, input('Ingrese el nombre de la partida: '))
                 except Exception as ex:
                     input(str(ex) + '\nPresione la tecla "Enter" para continuar...')
 
     def editar_tablero(self):
         while True:
             try:
-                valores = input('Ingresar coordenadas de la célula que desea modificar en formato "fila x columna":').split('x')
+                valores = input('Ingresar coordenadas de la célula que desea modificar en formato "fila x columna": ').split('x')
                 if len(valores) != 2 or not str(valores[0]).isnumeric() or not str(valores[1]).isnumeric():
-                    raise FormatoIncorrecto('Las coordenadas de la célula requieren que sean expresadas en formato "fila x columna". Ej:5x5.')
+                    raise FormatoIncorrecto('Las coordenadas de la célula requieren que sean expresadas en formato "fila x columna". Ej: 5x5.')
                 else:
                     self.limpiar()
                     self.tablero.set_value(int(valores[0]), int(valores[1]))
@@ -141,7 +141,7 @@ class Menu():
                     raise IndexError('Por favor, ingrese un número.')
                 valor = int(valor)
                 if tomar_valores and not valor in [int(s) for s in texto.split() if s.isdigit()] and valor < 0:
-                    raise IndexError('Por favor, ingrese un número correspondiente al menú:' + str([int(s) for s in texto.split() if s.isdigit()]))
+                    raise IndexError('Por favor, ingrese un número correspondiente al menú: ' + str([int(s) for s in texto.split() if s.isdigit()]))
                 return valor
             except IndexError as ex:
                 print(str(ex))
