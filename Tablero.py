@@ -81,7 +81,7 @@ class Tablero():
                     if adjacentes == 2 or adjacentes == 3:
                         new_gen.tablero[x][y] = Celula.VIVA
                         contador_vivas += 1
-        self.finalizo = self == new_gen or (len(self.logTableros) > 1 and self.logTableros[len(self.logTableros)-1] == new_gen) or contador_vivas == 0
+        self.finalizo = self == new_gen or (len(self.logTableros) > 1 and self.logTableros[len(self.logTableros)-2] == new_gen) or contador_vivas == 0
         self.estatico = self.finalizo and contador_vivas != 0
         self.logTableros.append(new_gen)
         self.tablero = new_gen.tablero
