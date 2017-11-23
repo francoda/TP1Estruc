@@ -47,9 +47,7 @@ class Tablero():
                              'Debe ingresar un número mayor a 0.')
 
     def set_value(self, fila, columna, valor=''):
-        fila -= 1
-        columna -= 1
-        if fila < 0 and columna < 0 and fila > len(self.tablero[0]) and fila > len(self.tablero):
+        if fila < 0 or columna < 0 or fila > (len(self.tablero) - 1) or columna > (len(self.tablero[0]) - 1):
             raise IndexError
         elif valor != '' and valor != Celula.MUERTA and valor != Celula.VIVA:
             raise FormatoIncorrecto('Valor incorrecto (Valores posibles:[ ' + str(Celula.MUERTA) + ' , ' + str(Celula.VIVA) + '])')

@@ -121,7 +121,7 @@ class Menu():
                     raise FormatoIncorrecto('Las coordenadas de la célula requieren que sean expresadas en formato "fila x columna". Ej: 5x5.')
                 else:
                     self.limpiar()
-                    self.tablero.set_value(int(valores[0]), int(valores[1]))
+                    self.tablero.set_value(int(valores[0]) - 1, int(valores[1]) - 1)
                     print(self.tablero.impresion_tablero())
                     if self.leer_entero('1 - Modificar otra célula \n'
                                         '0 - Iniciar Juego \n') == 0:
